@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>摇一摇就有汉服哟</title>
+    <style>
+        a {
+            text-decoration: none;
+        }
+
+        .hand {
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            width: 150px;
+            height: 150px;
+            margin: -75px 0 0 -75px;
+        }
+
+        @-webkit-keyframes lasting {
+            0%, 100% {
+                transform: rotateZ(-30deg);
+                -webkit-transform: rotateZ(-30deg);
+            }
+            50% {
+                transform: rotateZ(30deg);
+                -webkit-transform: rotateZ(30deg);
+            }
+        }
+
+        .hand.lasting {
+            animation: lasting 1s linear infinite;
+            -webkit-animation: lasting 1s linear infinite;
+        }
+
+        #prize {
+            margin-top: 115%;
+            margin-left: auto;
+            margin-right: auto;
+            width: 84%;
+            height: 40px;
+            background: #424458;
+            border: 1px solid rgba(2, 2, 2, 0.28);
+            border-radius: 3px;
+            dropShadow: #343546;
+            line-height: 40px;
+            color: #ec6941;
+            corner: 10px;
+            padding: 14px 0px;
+
+        }
+
+    </style>
+</head>
+<body>
+<body style="background-color: #383a4c;">
+
+<img id="hand" class="hand" src="hand.png">
+
+<div id="prize" style="text-align: center">
+    只有3次机会哦，把握好！！！
+</div>
+<script>
+    (function () {
+        var _compatModel = document.compatMode === "CSS1Compat";
+        var bodyWrapper = document.querySelector("body");
+        var hdom = document.documentElement;
+
+        function reset() {
+            var w_H = _compatModel ? hdom.clientHeight : document.body.clientHeight;
+            var w_W = _compatModel ? hdom.clientWidth : document.body.clientWidth;
+            bodyWrapper.style.height = w_H + "px";
+        }
+
+        document.addEventListener('DOMContentLoaded', reset);
+        window.addEventListener('pageshow', reset);
+        window.addEventListener('load', function () {
+            reset();
+            window.scrollTo(0, 0);
+        });
+        window.addEventListener('resize', function () {
+            setTimeout(reset, 0);
+        });
+    })();
+
+    function addClass(ele, name) {
+        var o = ele.className;
+        var os = o.split(" ");
+        var r = os.some(function (e, i) {
+            if (e == name)
+                return true;
+        });
+        if (r) {
+            return;
+        }
+        ele.className = o + " " + name;
+    }
+
+    function removeClass(ele, name) {
+        var o = ele.className;
+        var os = o.split(" ");
+        os = os.filter(function (e) {
+            if (e == name) {
+                return false;
+            } else {
+                return true;
+            }
+        });
+        ele.className = os.join(" ");
+    }
+
+    function $(s) {
+        var ss = s.split(" ");
+        if (ss[ss.length - 1].indexOf("#") === 0) {
+            return document.querySelector(s);
+        } else {
+            return document.querySelectorAll(s);
+        }
+    }
+    var time = 0;
+    var last_update = 0;
+    var x, y, z, last_x = 0, last_y = 0, last_z = 0, speedx = 0, speedy = 0, speedz = 0;
+    var timeStamp = true;
+
+    //监听运动传感事件
+    if (window.DeviceMotionEvent) {
+        /*document.getElementById("shakehidden").innerHTML = "Shake to search ...";*/
+        window.addEventListener('devicemotion', deviceMotionHandler, false);
+    } else {
+        document.getElementById("prize").innerHTML = "Not supported on your device.";
+    }
+    //然后获取含重力的加速度。
+
+    function deviceMotionHandler(eventData) {
+
+        var acceleration = eventData.accelerationIncludingGravity;
+        var curTime = new Date().getTime();
+
+        if ((curTime - last_update) > 300) {
+            var diffTime = curTime - last_update;
+            last_update = curTime;
+            x = acceleration.x;
+            y = acceleration.y;
+            z = acceleration.z;
+
+            var speed = Math.abs(x + y + z - last_x - last_y - last_z) / diffTime
+                    * 10000;
+
+            if (speed > 300 && timeStamp == true && x < 0 && y < 0) {
+                start();
+//                t = setTimeout(function () {
+//                    timeStamp = true;
+//                }, 800);
+            }
+            last_x = x;
+            last_y = y;
+            last_z = z;
+        }
+
+        if (speedx != null && speedy != null && speedz != null) {
+        }
+    }
+    var prizes = ["一个温暖的拥抱", "啥都没有,再接再厉", "一套汉服", "钻石一枚"];
+    var hand = $("#hand");
+    var prize = $("#prize");
+
+    function start() {
+        prize.style.visibility = "hidden";
+        addClass(hand, "lasting");
+
+        removeClass(hand, "lasting");
+
+        var index = Math.floor(Math.random() * (prizes.length));
+        prize.innerHTML = "恭喜您获得了：" + prizes[index] + "!";
+        if (index == 2) {
+            prize.innerHTML += '<a href="tel:15700112940" style="color: deepskyblue"><strong>点击领取汉服</strong></a>';
+        }
+        if (index == 3) {
+            prize.innerHTML += '<a href="tel:15700112940" style="color: deepskyblue"><em>哈哈,不给！</em></a>';
+        }
+        prize.style.visibility = "visible";
+        time++;
+        if (time >= 3) {
+            yyshake.stop();
+            prize.innerHTML = '蓝瘦,555,没有机会了!<a href="tel:15700112940" style="color: #fff"><strong>点击要机会</strong></a>';
+
+        }
+    }
+
+</script>
+
+</body>
+</body>
+</html>
